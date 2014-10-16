@@ -1,8 +1,6 @@
-#include <iostream>
 #include <string>
 #include "md5.h"
 
-using std::cout;
 using std::string;
 
 #ifndef TEST_H

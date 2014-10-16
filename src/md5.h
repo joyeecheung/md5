@@ -14,9 +14,9 @@ typedef unsigned int size_t;
 class MD5 {
 public:
   MD5();
-  void update(const unsigned char *in, size_t inputLen);
-  void update(const char *in, size_t inputLen);
-  void finalize();
+  MD5& update(const unsigned char* in, size_t inputLen);
+  MD5& update(const char* in, size_t inputLen);
+  MD5& finalize();
   string toString() const;
 
 #ifndef SAMPLE_TEST

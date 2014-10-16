@@ -35,7 +35,7 @@ MD5::MD5() {
   init();
 }
 
-void MD5::update(const uint8_t* input, size_t inputLen) {
+MD5& MD5::update(const uint8_t* input, size_t inputLen) {
   // compute number of bytes mod 64
   size_t index = (uint32_t)((lo >> 3) & 0x3F);
 
@@ -63,13 +63,15 @@ void MD5::update(const uint8_t* input, size_t inputLen) {
 
   // Buffer remaining input
   memcpy(&buffer[index], &input[i], inputLen - i);
+
+  return *this;
 }
 
-void MD5::update(const char* input, size_t inputLen) {
-  update((const uint8_t *)input, inputLen);
+MD5& MD5::update(const char* input, size_t inputLen) {
+  return update((const uint8_t*)input, inputLen);
 }
 
-void MD5::finalize() {
+MD5& MD5::finalize() {
   static uint8_t PADDING[64] = {0};
   PADDING[0] = 0x80;
 
@@ -97,6 +99,8 @@ void MD5::finalize() {
 
     finalized = true;
   }
+
+  return *this;
 }
 
 string MD5::toString() const {
