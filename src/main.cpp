@@ -18,7 +18,9 @@ int main(int argc, char* argv[]) {
   std::ios::sync_with_stdio(false);
 
 #ifdef SAMPLE_TEST
+
   runTests();
+
 #else
 
   string buffer;
