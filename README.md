@@ -18,7 +18,9 @@
 
 If you want to use redirection, this is an example. (Checkout the `test` target in Makefile)
 
-  ./md5 < testcase/in > testcase/result
+```bash
+./md5 < testcase/in > testcase/result
+```
 
 ###API
 
@@ -37,6 +39,7 @@ If you want to use redirection, this is an example. (Checkout the `test` target 
   }
   ```
 * `update`, `finalize`, `toString`
+
   Sample usage:
 
   ```cpp
