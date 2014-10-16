@@ -1,6 +1,6 @@
 CC=g++
-#CFLAGS=-c -g -Wall
-CFLAGS=-c -g -Wall -DSAMPLE_TEST
+CFLAGS=-c -g -Wall
+#CFLAGS=-c -g -Wall -DSAMPLE_TEST
 
 TEST=test.cpp
 MD5=md5.cpp
@@ -31,8 +31,15 @@ obj/%.o: src/%.cpp
 clean:
 	rm obj/*.o $(EXECUTABLE)
 
-test:
+test: $(EXECUTABLE)
+ifneq (,$(findstring TEST, $(CFLAGS)))
+	echo "please remove -DSAMPLE_TEST in CFLAGS"
+else
+	./md5 < testcase/in > testcase/result
+	diff testcase/out testcase/result
+endif
 
-cleantest:
+cleantest: clean
+	rm testcase/result
 
 .PHONY: test cleantest
