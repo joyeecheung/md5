@@ -8,8 +8,8 @@ using std::string;
 
 namespace joyee {
 
-void testMD5(const string src, const string expected);
 void runTests();
+
 }
 
 #endif

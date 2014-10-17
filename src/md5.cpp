@@ -1,8 +1,17 @@
+/*
+ * Reference: https://www.ietf.org/rfc/rfc1321.txt
+ */
+
 #include <cstdio>
 #include <cstring>
 #include "md5.h"
 
 namespace joyee {
+
+/*
+ * MD5 transform constants.
+ * reference: RFC 1321 3.4
+ */
 #define S11 7
 #define S12 12
 #define S13 17
@@ -20,7 +29,11 @@ namespace joyee {
 #define S43 15
 #define S44 21
 
-// optimized for architectures without AND-NOT instruction
+/*
+ * MD5 transform auxiliary functions, optimized for architectures
+ * without AND-NOT instruction.
+ * reference: RFC 1321 3.4
+ */
 #define F(x, y, z) (z ^ (x & (y ^ z)))
 #define G(x, y, z) (y ^ (z & (x ^ y)))
 #define H(x, y, z) (x ^ y ^ z)
@@ -35,6 +48,11 @@ MD5::MD5() {
   init();
 }
 
+/*
+ * Cut the concatenated data into chuncks of BLOCK_SIZE,
+ * then transform them into the hash.
+ * reference: RFC 1321
+ */
 MD5& MD5::update(const uint8_t* input, size_t inputLen) {
   // compute number of bytes mod 64
   size_t index = (uint32_t)((lo >> 3) & 0x3F);
@@ -46,8 +64,8 @@ MD5& MD5::update(const uint8_t* input, size_t inputLen) {
 
   size_t partLen = 64 - index;
 
-  size_t i;
   // Transform as many times as possible.
+  size_t i;
   if (inputLen >= partLen) {
     memcpy(&buffer[index], input, partLen);
     transform(buffer);
@@ -67,10 +85,17 @@ MD5& MD5::update(const uint8_t* input, size_t inputLen) {
   return *this;
 }
 
+/*
+ * Signed char interface of update.
+ */
 MD5& MD5::update(const char* input, size_t inputLen) {
   return update((const uint8_t*)input, inputLen);
 }
 
+/*
+ * Append padding bits and length, then wrap it up.
+ * reference: RFC 1321 3.2, 3.3
+ */
 MD5& MD5::finalize() {
   static uint8_t PADDING[64] = {0};
   PADDING[0] = 0x80;
@@ -103,6 +128,11 @@ MD5& MD5::finalize() {
   return *this;
 }
 
+/*
+ * Output the digest as a string,
+ * 4 * 4-byte word * 2 characters per word = 32 characters.
+ * reference: RFC 1321 3.5
+ */
 string MD5::toString() const {
   if (!finalized)
     return string("");
@@ -114,6 +144,10 @@ string MD5::toString() const {
   return string(result);
 }
 
+/*
+ * Initialize the MD buffer, counter and finialized flag.
+ * reference: RFC 1321 3.3
+ */
 void MD5::init() {
   hi = lo = 0;
 
@@ -125,6 +159,12 @@ void MD5::init() {
   finalized = false;
 }
 
+/*
+ * The core of the MD5 algorithm, updating the existing MD5 hash to
+ * reflect the addition of new data. update() will cut the data
+ * into blocks for it.
+ * reference: RFC 1321 3.4
+ */
 void MD5::transform(const uint8_t block[BLOCK_SIZE]) {
   uint32_t a = state[0],
            b = state[1],
@@ -215,18 +255,29 @@ void MD5::transform(const uint8_t block[BLOCK_SIZE]) {
   memset(x, 0, sizeof x);
 }
 
+/*
+ * Convert each 4 8-bit values (little endian) into 32-bit values.
+ * len is expected to be multiple of 4.
+ */
 void MD5::u8atou32a(uint32_t* out, const uint8_t* in, size_t len) {
   for (size_t i = 0, j = 0; j < len; i++, j += 4) {
     u8atou32(out[i], in + j);
   }
 }
 
+/*
+ * Convert 32-bit values into groups of 4 8-bit values (little endian).
+ * len is expected to be multiple of 4.
+ */
 void MD5::u32atou8a(uint8_t* out, const uint32_t* in, size_t len) {
   for (size_t i = 0, j = 0; j < len; i++, j += 4) {
     u32tou8a(out + j, in[i]);
   }
 }
 
+/*
+ * Convert 4 8-bit values (little endian) into a 32-bit value.
+ */
 void MD5::u8atou32(uint32_t& out, const uint8_t* in) {
   out = 0;
   for (size_t i = 0; i < 4; ++i) {
@@ -234,6 +285,9 @@ void MD5::u8atou32(uint32_t& out, const uint8_t* in) {
   }
 }
 
+/*
+ * Convert a 32-bit value into 4 8-bit values (little endian).
+ */
 void MD5::u32tou8a(uint8_t* out, const uint32_t in) {
   for (size_t i = 0; i < 4; ++i) {
     out[i] = (in >> i * 8) & 0xff;
