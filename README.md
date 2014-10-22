@@ -57,3 +57,8 @@ If you want to use redirection, this is an example. (Checkout the `test` target 
     return 0;
   }
   ```
+
+###About
+* [Github repository](https://github.com/joyeecheung/md5)
+* Author: Qiuyi Zhang
+* Time: Oct. 2014
