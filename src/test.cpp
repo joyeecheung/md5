@@ -9,6 +9,12 @@ using std::getline;
 
 namespace joyee {
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+static const string slash = "\\";
+#else
+static const string slash = "/";
+#endif
+
 void testMD5(const string src, const string expected) {
   static int count = 1;
   string actual = md5(src);
@@ -112,8 +118,17 @@ void runTests() {
   cout << "---------------------------------------------------------------\n";
 
   ifstream testin, testout;
-  testin.open("testcase/in");
-  testout.open("testcase/out");
+
+  string inpath = "testcase";
+  inpath += slash;
+  inpath += "in";
+
+  string outpath = "testcase";
+  outpath += slash;
+  outpath += "out";
+
+  testin.open(inpath.c_str());
+  testout.open(outpath.c_str());
   string instr, outstr;
 
   while (getline(testin, instr)) {

@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-c -g -Wall
-#CFLAGS=-c -g -Wall -DSAMPLE_TEST
+#CFLAGS=-c -g -Wall
+CFLAGS=-c -g -Wall -DSAMPLE_TEST
 
 TEST=test.cpp
 MD5=md5.cpp

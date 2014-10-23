@@ -53,18 +53,18 @@ MD5::MD5() {
  * then transform them into the hash.
  * reference: RFC 1321
  */
-MD5& MD5::update(const uint8_t* input, size_t inputLen) {
+MD5& MD5::update(const unsigned char* input, size_t inputLen) {
   // compute number of bytes mod 64
   size_t index = (uint32_t)((lo >> 3) & 0x3F);
 
-  // Update number of bits
+  // update the message length
   if ((lo += ((uint32_t)inputLen << 3)) < ((uint32_t)inputLen << 3))
     hi++;
   hi += ((uint32_t)inputLen >> 29);
 
   size_t partLen = 64 - index;
 
-  // Transform as many times as possible.
+  // update the states using the new message
   size_t i;
   if (inputLen >= partLen) {
     memcpy(&buffer[index], input, partLen);
@@ -79,7 +79,7 @@ MD5& MD5::update(const uint8_t* input, size_t inputLen) {
     i = 0;
   }
 
-  // Buffer remaining input
+  // buffer the remainder
   memcpy(&buffer[index], &input[i], inputLen - i);
 
   return *this;
@@ -101,24 +101,23 @@ MD5& MD5::finalize() {
   PADDING[0] = 0x80;
 
   if (!finalized) {
-    // Save number of bits
+    // save the length
     uint8_t bits[8];
-
     u32tou8a(bits, lo);
     u32tou8a(bits + 4, hi);
 
-    // pad out to 56 mod 64.
+    // pad the 1 bit and zeroes
     size_t index = (uint32_t)((lo >> 3) & 0x3f);
     size_t padLen = (index < 56) ? (56 - index) : (120 - index);
     update(PADDING, padLen);
 
-    // Append length (before padding)
+    // append length
     update(bits, 8);
 
-    // Store state in digest
+    // store the state
     u32atou8a(digest, state, 16);
 
-    // Zeroize sensitive information.
+    // wipe out sensitive data
     memset(buffer, 0, sizeof buffer);
     hi = lo = 0;
 
@@ -251,7 +250,7 @@ void MD5::transform(const uint8_t block[BLOCK_SIZE]) {
   state[2] += c;
   state[3] += d;
 
-  // Zeroize sensitive information.
+  // wipe out sensitive data
   memset(x, 0, sizeof x);
 }
 
