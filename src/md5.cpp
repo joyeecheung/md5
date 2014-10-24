@@ -103,8 +103,8 @@ MD5& MD5::finalize() {
   if (!finalized) {
     // save the length
     uint8_t bits[8];
-    u32tou8a(bits, lo);
-    u32tou8a(bits + 4, hi);
+    memcpy(bits, &lo, 4);
+    memcpy(bits + 4, &hi, 4);
 
     // pad the 1 bit and zeroes
     size_t index = (uint32_t)((lo >> 3) & 0x3f);
@@ -115,7 +115,7 @@ MD5& MD5::finalize() {
     update(bits, 8);
 
     // store the state
-    u32atou8a(digest, state, 16);
+    memcpy(digest, state, 16);
 
     // wipe out sensitive data
     memset(buffer, 0, sizeof buffer);
@@ -171,7 +171,7 @@ void MD5::transform(const uint8_t block[BLOCK_SIZE]) {
            d = state[3],
            x[16];
 
-  u8atou32a(x, block, BLOCK_SIZE);
+  memcpy(x, block, BLOCK_SIZE);
 
   /* Round 1 */
   STEP(F, a, b, c, d, x[ 0], 0xd76aa478, S11); /* 1 */
@@ -252,45 +252,6 @@ void MD5::transform(const uint8_t block[BLOCK_SIZE]) {
 
   // wipe out sensitive data
   memset(x, 0, sizeof x);
-}
-
-/*
- * Convert each 4 8-bit values (little endian) into 32-bit values.
- * len is expected to be multiple of 4.
- */
-void MD5::u8atou32a(uint32_t* out, const uint8_t* in, size_t len) {
-  for (size_t i = 0, j = 0; j < len; i++, j += 4) {
-    u8atou32(out[i], in + j);
-  }
-}
-
-/*
- * Convert 32-bit values into groups of 4 8-bit values (little endian).
- * len is expected to be multiple of 4.
- */
-void MD5::u32atou8a(uint8_t* out, const uint32_t* in, size_t len) {
-  for (size_t i = 0, j = 0; j < len; i++, j += 4) {
-    u32tou8a(out + j, in[i]);
-  }
-}
-
-/*
- * Convert 4 8-bit values (little endian) into a 32-bit value.
- */
-void MD5::u8atou32(uint32_t& out, const uint8_t* in) {
-  out = 0;
-  for (size_t i = 0; i < 4; ++i) {
-    out |= ((uint32_t)in[i]) << i * 8;
-  }
-}
-
-/*
- * Convert a 32-bit value into 4 8-bit values (little endian).
- */
-void MD5::u32tou8a(uint8_t* out, const uint32_t in) {
-  for (size_t i = 0; i < 4; ++i) {
-    out[i] = (in >> i * 8) & 0xff;
-  }
 }
 
 string md5(const string str) {

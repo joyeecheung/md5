@@ -29,11 +29,6 @@ private:
   void init();
   void transform(const uint8_t block[BLOCK_SIZE]);
 
-  static void u8atou32a(uint32_t* out, const uint8_t* in, size_t len);
-  static void u32atou8a(uint8_t* out, const uint32_t* in, size_t len);
-  static void u8atou32(uint32_t& out, const uint8_t* in);
-  static void u32tou8a(uint8_t* out, const uint32_t in);
-
   uint8_t buffer[BLOCK_SIZE];  // buffer of the raw data
   uint8_t digest[16];  // result hash, little endian
 
